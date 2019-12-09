@@ -9,6 +9,7 @@
 # include <sstream>
 #include <tgmath.h>
 #include <ft2build.h>
+#include "Debug.h"
 #include FT_FREETYPE_H
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 
@@ -18,10 +19,9 @@ void render();
 void getFpsCount(float current,float* lastTime);
 std::string readFile(std::string& dir);
 void printTextScreen(int x, int y, std::string str);
-template<typename T>void debugPrint(std::string str, T* variables, size_t arrayLength);
 
 
-static const bool DEBUG = false;
+Debug debug;
 FT_Library library;
 FT_Face face;
 std::string fileVertexShader = "Shaders/vs.glsl";
@@ -102,7 +102,7 @@ int main(void)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   Game.init();
   float ayuda[] = {13.5,48.0,0.25};
-  debugPrint((std::string)"TEXTO DEBUG",ayuda,NELEMS(ayuda));
+  debug.print((std::string)"TEXTO DEBUG",ayuda,NELEMS(ayuda));
   GLfloat deltaTime = 0.0f;
   GLfloat lastFrame = 0.0f;
   Game.State = GAME_ACTIVE;
@@ -163,8 +163,10 @@ void getFpsCount(float current,float* lastTime)
   if((current - *lastTime) >= 1.0f)
   {
     double fpsCount = 1000.0/double(fps);
-    std::cout << "FPS: " << fps << std::endl;
-    std::cout << "MS: " << fpsCount <<std::endl;
+    debug.print("FPS:",&fps,1);
+    debug.print("MS:",&fpsCount,1);
+    // std::cout << "FPS: " << fps << std::endl;
+    // std::cout << "MS: " << fpsCount <<std::endl;
     fps = 0;
     (*lastTime)++;
   }
@@ -223,24 +225,3 @@ std::string readFile(std::string& dir)
 //   	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,string[i]);
 //   }
 // }
-
-template<typename T>void debugPrint(std::string str, T* variables, size_t arrayLength)
-{
-  if(DEBUG)
-  {
-    std::cout << str << " " ;
-    for(int i = 0; i < arrayLength; i++)
-    {
-      if(i != 0)
-      {
-        std::cout << " , " << variables[i] ;
-      }
-      else
-      {
-        std::cout << variables[i];
-      }
-    }
-
-    std::cout << std::endl;
-  }
-}
