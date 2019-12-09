@@ -74,32 +74,6 @@ int Shader::getLocation(const std::string& variable)
   const char *var = variable.c_str();
   return glGetUniformLocation(shaderProgram, var);
 }
-//
-// template <typename T>void Shader::setUniform(const std::string& variable, T value)
-// {
-//   bool encontre = false;
-//   int indice = 0;
-//   T* aux = &value;
-//   while(!encontre && indice <= aux )
-//   {
-//     if(names[indice] == variable)
-//     {
-//       encontre = true;
-//       if(typeid(value).name() == typeid(float*).name())
-//         checkUniform(locations[indice],types[indice],value);
-//       else
-//         checkUniform(locations[indice],types[indice],aux);
-//     }
-//     else
-//     {
-//       indice++;
-//     }
-//   }
-//   if(!encontre)
-//   {
-//     //std::cout << "No se encontro el uniform deseado" << std::endl;
-//   }
-// }
 
 void Shader::getAttributes()
 {
@@ -131,67 +105,3 @@ void Shader::getUniforms()
       //printf("Uniform #%d Type: %u Name: %s\n", i, type, name);
   }
 }
-
-// template<typename T>void Shader::checkUniform(int location, GLenum type, T value)
-// {
-//   switch(type)
-//   {
-//     case(GL_FLOAT):       glUniform1f(location,(*(float)value));
-//                           break;
-//     case(GL_INT):         glUniform1i(location,(*(int)value));
-//                           break;
-//     case(GL_BOOL):        glUniform1i(location,(*(int)value));
-//                           break;
-//     case(GL_FLOAT_VEC2):  glUniform2f(location,(*(float*)value)[0],(*(float*)value)[1]);
-//                           break;
-//     case(GL_FLOAT_VEC3):  glUniform3f(location,(*(float*)value)[0],(*(float*)value)[1],(*(float*)value)[2]);
-//                           break;
-//     case(GL_FLOAT_VEC4):  glUniform4f(location,(*(float*)value)[0],(*(float*)value)[1],(*(float*)value)[2],(*(float*)value)[3]);
-//                           break;
-//   }
-// }
-// template<typename T> void Shader::checkUniform(int location, GLenum type, T value)
-// {
-//
-//   // if(type == GL_FLOAT)
-//   //   glUniform1f(location,1,value);
-//   if(type == GL_INT)
-//     glUniform1i(location,1,value);
-//   // switch(type)
-//   // {
-//   //   case(GL_FLOAT):       glUniform1fv(location,1,value);
-//   //                         break;
-//   //   case(GL_INT):         glUniform1iv(location,1,value);
-//   //                         break;
-//   //   // case(GL_BOOL):        glUniform1iv(location,1,value);
-//   //   //                       break;
-//   //   case(GL_FLOAT_VEC2):  glUniform2fv(location,2,value);
-//   //                         break;
-//   //   case(GL_FLOAT_VEC3):  glUniform3fv(location,3,value);
-//   //                         break;
-//   //   case(GL_FLOAT_VEC4):  glUniform4fv(location,4,value);
-//   //                         break;
-//   // }
-// }
-//
-// template<typename T> void Shader::setUniform(const std::string& variable, T value)
-// {
-//   bool encontre = false;
-//   int indice = 0;
-//   while(!encontre && indice <= aux )
-//   {
-//     if(names[indice] == variable)
-//     {
-//       encontre = true;
-//       checkUniform(locations[indice],types[indice],value);
-//     }
-//     else
-//     {
-//       indice++;
-//     }
-//   }
-//   if(!encontre)
-//   {
-//     std::cout << "No se encontro el uniform deseado" << std::endl;
-//   }
-// }
