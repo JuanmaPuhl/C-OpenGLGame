@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <typeinfo>
+#include "Debug.h"
 class Shader
 {
 public:
@@ -54,17 +55,11 @@ private:
                             break;
       case(GL_BOOL):        glUniform1i(location,(*value));
                             break;
-      case(GL_FLOAT_VEC2):  aux= *value;
-                            auxP = &aux;
-                            glUniform2f(location,(auxP[0]),(auxP[1]));
+      case(GL_FLOAT_VEC2):  glUniform2fv(location,1,value);
                             break;
-      case(GL_FLOAT_VEC3):  aux= *value;
-                            auxP = &aux;
-                            glUniform3f(location,(auxP[0]),(auxP[1]),(auxP[2]));
+      case(GL_FLOAT_VEC3):  glUniform3fv(location,1,value);
                             break;
-      case(GL_FLOAT_VEC4):  aux= *value;
-                            auxP = &aux;
-                            glUniform4f(location,(auxP[0]),(auxP[1]),(auxP[2]),(auxP[3]));
+      case(GL_FLOAT_VEC4):  glUniform4fv(location,1,value);
                             break;
     }
   }
@@ -81,5 +76,6 @@ private:
   GLenum* types;
   int* locations;
   int aux;
+  Debug debug;
 };
 #endif

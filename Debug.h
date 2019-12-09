@@ -6,6 +6,7 @@ class Debug{
 public:
   Debug();
   ~Debug();
+  /*Funcion para imprimir por pantalla*/
   template<typename T>void print(std::string str, T* variables, size_t arrayLength)
   {
     if(DEBUG)
@@ -27,6 +28,6 @@ public:
     }
   }
 private:
-  static const bool DEBUG = false;
+  static const bool DEBUG = true;
 };
 #endif

@@ -33,8 +33,8 @@ const int HEIGHT = 600;
 Game Game(WIDTH, HEIGHT);
 unsigned int VAO,VAO2,VAO3;
 unsigned int VBO,VBO2,VBO3;
-float color[3] = {1.0f,0.0f,0.0f};
-int prueba = 2;
+float color[3] = {0.1,0.7,0.5};
+float prueba = 1.0f;
 int fps = 0;
 float vertices[] =
 {
@@ -67,7 +67,7 @@ int main(void)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
   window = glfwCreateWindow(WIDTH, HEIGHT, "Game", NULL, NULL);
   if (!window)
   {
@@ -165,8 +165,6 @@ void getFpsCount(float current,float* lastTime)
     double fpsCount = 1000.0/double(fps);
     debug.print("FPS:",&fps,1);
     debug.print("MS:",&fpsCount,1);
-    // std::cout << "FPS: " << fps << std::endl;
-    // std::cout << "MS: " << fpsCount <<std::endl;
     fps = 0;
     (*lastTime)++;
   }
@@ -186,8 +184,10 @@ void render()
   glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/sizeof(*vertices) / 3);
   glBindVertexArray(VAO2);
   glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices2)/sizeof(*vertices2) / 3);
+  //shader2.useShader();
   glBindVertexArray(VAO3);
   glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices3)/sizeof(*vertices3) / 3);
+  //glUseProgram(0);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -210,7 +210,6 @@ std::string readFile(std::string& dir)
   std::ifstream file{dir};
   std::string const fileContent = static_cast<std::ostringstream&>
       (std::ostringstream{} << file.rdbuf()).str();
-  // std::cout << fileContent << std::endl;
   return fileContent;
 }
 

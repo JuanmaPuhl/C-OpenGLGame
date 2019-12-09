@@ -11,7 +11,6 @@ Shader::Shader()
 }
 Shader::~Shader()
 {
-
 }
 
 unsigned int Shader::createShaderProgram(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
@@ -34,12 +33,8 @@ unsigned int Shader::createShaderProgram(const std::string& vertexShaderSource, 
   names = new std::string[aux];
   types = new GLenum[aux];
   locations = new int[aux];
-  // std::cout << "La cantidad de uniforms y atributes es: " <<aux << std::endl;
   getAttributes();
   getUniforms();
-  // for(int i=0; i<aux; i++){
-  //   std::cout << "Name " << names[i] << " Type " << types[i] << std::endl;
-  // }
   return program;
 }
 unsigned int Shader::createShader(const std::string& source, GLenum type)
@@ -78,23 +73,18 @@ int Shader::getLocation(const std::string& variable)
 void Shader::getAttributes()
 {
   glGetProgramiv(shaderProgram, GL_ACTIVE_ATTRIBUTES, &count);
-  // printf("Active Attributes: %d\n", count);
-
   for (int i = 0; i < count; i++)
   {
       glGetActiveAttrib(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
       names[indexSaved] = name;
       types[indexSaved] = type;
       indexSaved++;
-      //printf("Attribute #%d Type: %u Name: %s\n", i, type, name);
   }
 }
 
 void Shader::getUniforms()
 {
   glGetProgramiv(shaderProgram, GL_ACTIVE_UNIFORMS, &count);
-  // printf("Active Uniforms: %d\n", count);
-
   for (int i = 0; i < count; i++)
   {
       glGetActiveUniform(shaderProgram, (GLuint)i, bufSize, &length, &size, &type, name);
@@ -102,6 +92,5 @@ void Shader::getUniforms()
       types[indexSaved] = type;
       locations[indexSaved] = glGetUniformLocation(shaderProgram,name);
       indexSaved++;
-      //printf("Uniform #%d Type: %u Name: %s\n", i, type, name);
   }
 }
