@@ -10,7 +10,7 @@
 #include <tgmath.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
+#define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 
 /*Declaraciones previas de funciones implementadas mas abajo*/
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -18,7 +18,10 @@ void render();
 void getFpsCount(float current,float* lastTime);
 std::string readFile(std::string& dir);
 void printTextScreen(int x, int y, std::string str);
+template<typename T>void debugPrint(std::string str, T* variables, size_t arrayLength);
 
+
+static const bool DEBUG = false;
 FT_Library library;
 FT_Face face;
 std::string fileVertexShader = "Shaders/vs.glsl";
@@ -98,6 +101,8 @@ int main(void)
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   Game.init();
+  float ayuda[] = {13.5,48.0,0.25};
+  debugPrint((std::string)"TEXTO DEBUG",ayuda,NELEMS(ayuda));
   GLfloat deltaTime = 0.0f;
   GLfloat lastFrame = 0.0f;
   Game.State = GAME_ACTIVE;
@@ -218,3 +223,24 @@ std::string readFile(std::string& dir)
 //   	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24,string[i]);
 //   }
 // }
+
+template<typename T>void debugPrint(std::string str, T* variables, size_t arrayLength)
+{
+  if(DEBUG)
+  {
+    std::cout << str << " " ;
+    for(int i = 0; i < arrayLength; i++)
+    {
+      if(i != 0)
+      {
+        std::cout << " , " << variables[i] ;
+      }
+      else
+      {
+        std::cout << variables[i];
+      }
+    }
+
+    std::cout << std::endl;
+  }
+}
