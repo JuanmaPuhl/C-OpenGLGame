@@ -14,6 +14,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "OrtographicCamera.h"
 #include FT_FREETYPE_H
 
 /*Declaraciones previas de funciones implementadas mas abajo*/
@@ -37,14 +38,19 @@ float prueba = 1.0f;
 int fps = 0;
 float vertices[] =
 {
- -0.5f, 0.0f, 0.0f,
-  0.5f, 0.0f, 0.0f,
-  0.0f, 1.0f, 0.0f
+  0.5f, 0.5f, 0.0f,
+ -0.5f, 0.5f, 0.0f,
+  0.5f,-0.5f, 0.0f,
+ -0.5f, 0.5f, 0.0f,
+ -0.5f,-0.5f, 0.0f,
+  0.5f,-0.5f, 0.0f
 };
 float timeValue, greenValue;
 float lastTimeFPS = 0;
 float currentFrame;
 int indice;
+OrtographicCamera camera;
+
 int main(void)
 {
   GLFWwindow* window;
@@ -87,6 +93,7 @@ int main(void)
   glViewport(0, 0, WIDTH, HEIGHT);
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   Game.init();
   float ayuda[] = {13.5,48.0,0.25};
@@ -94,24 +101,14 @@ int main(void)
   GLfloat deltaTime = 0.0f;
   GLfloat lastFrame = 0.0f;
   Game.State = GAME_ACTIVE;
-  Geometry trianguloGeometry(vertices,NELEMS(vertices));
+  Geometry quadGeometry(vertices,NELEMS(vertices));
   Shader shader1(fileVertexShader,fileFragmentShader);
   Shader shader2(fileVertexShader,fileFragmentShader2);
   shader1.useShader();
-  Object triangulo(trianguloGeometry,shader2);
-  Object triangulo2(trianguloGeometry,shader2);
-  Object triangulo3(trianguloGeometry,shader2);
-  triangulo2.setPosition(glm::vec3(-0.5,-1.0,0.0));
-  triangulo3.setPosition(glm::vec3(0.5,-1.0,0.0));
-  triangulo.scale(glm::vec3(0.5,0.5,0.5));
-  triangulo2.scale(glm::vec3(0.5,0.5,0.5));
-  triangulo3.scale(glm::vec3(0.5,0.5,0.5));
-  sceneObjects.push_back(triangulo);
-  sceneObjects.push_back(triangulo2);
-  sceneObjects.push_back(triangulo3);
-  view = glm::mat4(1.0f);
-  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-  projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 10.0f);
+  Object player(quadGeometry,shader2);
+  player.scale(glm::vec3(1.0,1.5,1.0));
+  sceneObjects.push_back(player);
+
   //projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
   while (!glfwWindowShouldClose(window))
   {
@@ -132,13 +129,14 @@ int main(void)
 void render()
 {
   glClearColor(0.0f,0.0f,0.0f,1.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   timeValue = glfwGetTime();
   greenValue= ((sin(timeValue) / 2.0f) + 0.5f);
+  camera.refreshViewMatrix();
   for(int i=0; i<sceneObjects.size(); i++)
   {
-    sceneObjects[i].getShader().setUniform("view",glm::value_ptr(view));
-    sceneObjects[i].getShader().setUniform("projection",glm::value_ptr(projection));
+    sceneObjects[i].getShader().setUniform("view",glm::value_ptr(camera.getViewMatrix()));
+    sceneObjects[i].getShader().setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
     sceneObjects[i].getShader().setUniform("transform",glm::value_ptr(sceneObjects[i].getModelMatrix()));
     sceneObjects[i].getShader().setUniform("fade",&greenValue);
     sceneObjects[i].getShader().setUniform("color",color);
@@ -160,6 +158,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     Game.Keys[key] = GL_TRUE;
     else if (action == GLFW_RELEASE)
     Game.Keys[key] = GL_FALSE;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+      camera.moveCamera(-1);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+      camera.moveCamera(1);
   }
 }
 
