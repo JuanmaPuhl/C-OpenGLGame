@@ -15,21 +15,19 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include FT_FREETYPE_H
-#define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 
 /*Declaraciones previas de funciones implementadas mas abajo*/
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void render();
-void getFpsCount(float current,float* lastTime);
 void printTextScreen(int x, int y, std::string str);
-
+glm::mat4 trans;
 std::vector<Object> sceneObjects;
 FT_Library library;
 FT_Face face;
 std::string fileVertexShader = "Shaders/vs.glsl";
 std::string fileFragmentShader = "Shaders/fs.glsl";
 std::string fileFragmentShader2 = "Shaders/fs2.glsl";
-Shader shader1,shader2;
+
 const int WIDTH = 800;
 const int HEIGHT = 600;
 Game Game(WIDTH, HEIGHT);
@@ -42,22 +40,10 @@ float vertices[] =
   0.5f, 0.0f, 0.0f,
   0.0f, 1.0f, 0.0f
 };
-float vertices2[] =
-{
- -0.5f, 0.0f, 0.0f,
- -1.0f,-1.0f, 0.0f,
-  0.0f,-1.0f, 0.0f
-};
-float vertices3[] =
-{
-  0.5f, 0.0f, 0.0f,
-  0.0f,-1.0f, 0.0f,
-  1.0f,-1.0f, 0.0f
-};
-
 float timeValue, greenValue;
 float lastTimeFPS = 0;
 float currentFrame;
+int indice;
 int main(void)
 {
   GLFWwindow* window;
@@ -108,23 +94,20 @@ int main(void)
   GLfloat lastFrame = 0.0f;
   Game.State = GAME_ACTIVE;
   Geometry trianguloGeometry(vertices,NELEMS(vertices));
-  // Geometry trianguloGeometry2(vertices2,NELEMS(vertices2));
-  // Geometry trianguloGeometry3(vertices3,NELEMS(vertices3));
-  const std::string vertexShaderSource = fileManager.readFile(fileVertexShader);
-  const std::string fragmentShaderSource = fileManager.readFile(fileFragmentShader);
-  const std::string fragmentShaderSource2 = fileManager.readFile(fileFragmentShader2);
-  shader1.createShaderProgram(vertexShaderSource,fragmentShaderSource);
-  shader2.createShaderProgram(vertexShaderSource,fragmentShaderSource2);
+  Shader shader1(fileVertexShader,fileFragmentShader);
+  Shader shader2(fileVertexShader,fileFragmentShader2);
   shader1.useShader();
   Object triangulo(trianguloGeometry,shader2);
   Object triangulo2(trianguloGeometry,shader2);
   Object triangulo3(trianguloGeometry,shader2);
+  triangulo2.setPosition(glm::vec3(-0.5,-1.0,0.0));
+  triangulo3.setPosition(glm::vec3(0.5,-1.0,0.0));
+  triangulo.scale(glm::vec3(0.5,0.5,0.5));
+  triangulo2.scale(glm::vec3(0.5,0.5,0.5));
+  triangulo3.scale(glm::vec3(0.5,0.5,0.5));
   sceneObjects.push_back(triangulo);
   sceneObjects.push_back(triangulo2);
   sceneObjects.push_back(triangulo3);
-  triangulo2.setPosition(glm::vec3(-0.5,-0.5,0.0));
-  triangulo3.setPosition(glm::vec3(0.5,-0.5,0.0));
-
   while (!glfwWindowShouldClose(window))
   {
     currentFrame = glfwGetTime();
@@ -147,12 +130,12 @@ void render()
   glClear(GL_COLOR_BUFFER_BIT);
   timeValue = glfwGetTime();
   greenValue= ((sin(timeValue) / 2.0f) + 0.5f);
-  shader2.setUniform("fade",&greenValue);
-  shader1.setUniform("color",color);
-  shader1.setUniform("prueba",&prueba);
   for(int i=0; i<sceneObjects.size(); i++)
   {
-    glUniformMatrix4fv(glGetUniformLocation(sceneObjects[i].getShader().getShaderProgram(), "transform"), 1, GL_FALSE, glm::value_ptr(sceneObjects[i].getModelMatrix()));
+    sceneObjects[i].getShader().setUniform("transform",glm::value_ptr(sceneObjects[i].getModelMatrix()));
+    sceneObjects[i].getShader().setUniform("fade",&greenValue);
+    sceneObjects[i].getShader().setUniform("color",color);
+    sceneObjects[i].getShader().setUniform("prueba",&prueba);
     sceneObjects[i].drawObject();
   }
 

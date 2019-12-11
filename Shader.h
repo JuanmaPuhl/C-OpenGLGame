@@ -5,14 +5,11 @@
 #include <string>
 #include <iostream>
 #include <typeinfo>
-#include "Debug.h"
 class Shader
 {
 public:
-  Shader();
+  Shader(std::string& vertexSource, std::string& fragmentSource);
   ~Shader();
-  unsigned int createShaderProgram(const std::string& vertexShaderSource, const std::string& fragmentShaderSource);
-  unsigned int createShader(const std::string& source, GLenum type);
   void useShader();
   unsigned int getShaderProgram();
   int getLocation(const std::string& variable);
@@ -34,20 +31,16 @@ public:
         indice++;
       }
     }
-    if(!encontre)
-    {
-      //std::cout << "No se encontro el uniform deseado" << std::endl;
-    }
   }
 
 private:
+  unsigned int createShaderProgram(const std::string& vertexShaderSource, const std::string& fragmentShaderSource);
+  unsigned int createShader(const std::string& source, GLenum type);
   void getAttributes();
   void getUniforms();
   /*Tiene que estar aca por razones de fuerza mayor*/
   template<typename T>void checkUniform(int location, GLenum type, T value)
   {
-    float aux;
-    float* auxP;
     switch(type)
     {
       case(GL_FLOAT):       glUniform1f(location,(*value));
@@ -61,6 +54,8 @@ private:
       case(GL_FLOAT_VEC3):  glUniform3fv(location,1,value);
                             break;
       case(GL_FLOAT_VEC4):  glUniform4fv(location,1,value);
+                            break;
+      case(GL_FLOAT_MAT4):  glUniformMatrix4fv(location, 1, GL_FALSE, value);
                             break;
     }
   }
@@ -77,6 +72,5 @@ private:
   GLenum* types;
   int* locations;
   int aux;
-  Debug debug;
 };
 #endif
