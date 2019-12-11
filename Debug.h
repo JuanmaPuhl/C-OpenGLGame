@@ -2,6 +2,7 @@
 #define DEBUGCLASS_H_
 #include <string>
 #include <iostream>
+
 class Debug{
 public:
   Debug();
@@ -27,7 +28,10 @@ public:
       std::cout << std::endl;
     }
   }
+  void getFpsCount(float current, float* lastTime);
+
 private:
   static const bool DEBUG = true;
+  int fps = 0;
 };
 #endif
