@@ -5,8 +5,8 @@
 #include <iostream>
 #include <stdio.h>
 #include "Shader.h"
-# include <fstream>
-# include <sstream>
+#include <fstream>
+#include <sstream>
 #include <tgmath.h>
 #include <ft2build.h>
 #include "Utilities.h"

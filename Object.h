@@ -2,7 +2,6 @@
 #define OBJECT_H_
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <stdio.h>
 #include "Shader.h"
 #include "Geometry.h"
 class Object
