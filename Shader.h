@@ -14,6 +14,7 @@ public:
   unsigned int createShaderProgram(const std::string& vertexShaderSource, const std::string& fragmentShaderSource);
   unsigned int createShader(const std::string& source, GLenum type);
   void useShader();
+  unsigned int getShaderProgram();
   int getLocation(const std::string& variable);
   /*Tiene que estar aca por razones de fuerza mayor*/
   template <typename T>void setUniform(const std::string& variable, T value)

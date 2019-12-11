@@ -5,14 +5,15 @@
 #include <iostream>
 #include <stdio.h>
 #include "Shader.h"
-#include <fstream>
-#include <sstream>
 #include <tgmath.h>
 #include <ft2build.h>
 #include "Utilities.h"
 #include "Geometry.h"
 #include "Object.h"
 #include <vector>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include FT_FREETYPE_H
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 
@@ -20,11 +21,9 @@
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void render();
 void getFpsCount(float current,float* lastTime);
-std::string readFile(std::string& dir);
 void printTextScreen(int x, int y, std::string str);
 
 std::vector<Object> sceneObjects;
-//Debug debug;
 FT_Library library;
 FT_Face face;
 std::string fileVertexShader = "Shaders/vs.glsl";
@@ -34,7 +33,6 @@ Shader shader1,shader2;
 const int WIDTH = 800;
 const int HEIGHT = 600;
 Game Game(WIDTH, HEIGHT);
-unsigned int VAO,VAO2,VAO3;
 float color[3] = {0.1,0.7,0.5};
 float prueba = 1.0f;
 int fps = 0;
@@ -110,24 +108,22 @@ int main(void)
   GLfloat lastFrame = 0.0f;
   Game.State = GAME_ACTIVE;
   Geometry trianguloGeometry(vertices,NELEMS(vertices));
-  Geometry trianguloGeometry2(vertices2,NELEMS(vertices2));
-  Geometry trianguloGeometry3(vertices3,NELEMS(vertices3));
-  const std::string vertexShaderSource = readFile(fileVertexShader);
-  const std::string fragmentShaderSource = readFile(fileFragmentShader);
-  const std::string fragmentShaderSource2 = readFile(fileFragmentShader2);
+  // Geometry trianguloGeometry2(vertices2,NELEMS(vertices2));
+  // Geometry trianguloGeometry3(vertices3,NELEMS(vertices3));
+  const std::string vertexShaderSource = fileManager.readFile(fileVertexShader);
+  const std::string fragmentShaderSource = fileManager.readFile(fileFragmentShader);
+  const std::string fragmentShaderSource2 = fileManager.readFile(fileFragmentShader2);
   shader1.createShaderProgram(vertexShaderSource,fragmentShaderSource);
   shader2.createShaderProgram(vertexShaderSource,fragmentShaderSource2);
   shader1.useShader();
   Object triangulo(trianguloGeometry,shader2);
-  Object triangulo2(trianguloGeometry2,shader2);
-  Object triangulo3(trianguloGeometry3,shader2);
+  Object triangulo2(trianguloGeometry,shader2);
+  Object triangulo3(trianguloGeometry,shader2);
   sceneObjects.push_back(triangulo);
   sceneObjects.push_back(triangulo2);
   sceneObjects.push_back(triangulo3);
-
-  VAO = triangulo.getVAO();
-  VAO2 = triangulo2.getVAO();
-  VAO3 = triangulo3.getVAO();
+  triangulo2.setPosition(glm::vec3(-0.5,-0.5,0.0));
+  triangulo3.setPosition(glm::vec3(0.5,-0.5,0.0));
 
   while (!glfwWindowShouldClose(window))
   {
@@ -156,6 +152,7 @@ void render()
   shader1.setUniform("prueba",&prueba);
   for(int i=0; i<sceneObjects.size(); i++)
   {
+    glUniformMatrix4fv(glGetUniformLocation(sceneObjects[i].getShader().getShaderProgram(), "transform"), 1, GL_FALSE, glm::value_ptr(sceneObjects[i].getModelMatrix()));
     sceneObjects[i].drawObject();
   }
 
@@ -174,14 +171,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     else if (action == GLFW_RELEASE)
     Game.Keys[key] = GL_FALSE;
   }
-}
-
-std::string readFile(std::string& dir)
-{
-  std::ifstream file{dir};
-  std::string const fileContent = static_cast<std::ostringstream&>
-      (std::ostringstream{} << file.rdbuf()).str();
-  return fileContent;
 }
 
 // void printTextScreen(int x, int y, std::string str){

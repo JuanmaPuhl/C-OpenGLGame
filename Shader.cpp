@@ -33,6 +33,8 @@ unsigned int Shader::createShaderProgram(const std::string& vertexShaderSource, 
   getUniforms();
   return program;
 }
+
+
 unsigned int Shader::createShader(const std::string& source, GLenum type)
 {
   unsigned int shader = glCreateShader(type);
@@ -89,4 +91,9 @@ void Shader::getUniforms()
       locations[indexSaved] = glGetUniformLocation(shaderProgram,name);
       indexSaved++;
   }
+}
+
+unsigned int Shader::getShaderProgram()
+{
+  return this->shaderProgram;
 }
