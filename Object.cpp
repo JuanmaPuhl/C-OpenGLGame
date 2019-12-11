@@ -1,6 +1,5 @@
 #include "Object.h"
 
-Debug debugObject;
 Object::Object(Geometry geometry, Shader shader)
 {
   this->VBO = geometry.getVBO();
