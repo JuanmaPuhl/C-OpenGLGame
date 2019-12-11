@@ -21,21 +21,17 @@
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void render();
 void printTextScreen(int x, int y, std::string str);
-glm::mat4 trans;
 std::vector<Object> sceneObjects;
 FT_Library library;
 FT_Face face;
 std::string fileVertexShader = "Shaders/vs.glsl";
 std::string fileFragmentShader = "Shaders/fs.glsl";
 std::string fileFragmentShader2 = "Shaders/fs2.glsl";
-glm::mat4 view;
-glm::mat4 projection;
 const int WIDTH = 800;
 const int HEIGHT = 600;
 Game Game(WIDTH, HEIGHT);
 float color[3] = {0.1,0.7,0.5};
 float prueba = 1.0f;
-int fps = 0;
 float vertices[] =
 {
   0.5f, 0.5f, 0.0f,
