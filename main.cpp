@@ -27,7 +27,8 @@ FT_Face face;
 std::string fileVertexShader = "Shaders/vs.glsl";
 std::string fileFragmentShader = "Shaders/fs.glsl";
 std::string fileFragmentShader2 = "Shaders/fs2.glsl";
-
+glm::mat4 view;
+glm::mat4 projection;
 const int WIDTH = 800;
 const int HEIGHT = 600;
 Game Game(WIDTH, HEIGHT);
@@ -108,6 +109,10 @@ int main(void)
   sceneObjects.push_back(triangulo);
   sceneObjects.push_back(triangulo2);
   sceneObjects.push_back(triangulo3);
+  view = glm::mat4(1.0f);
+  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+  projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 10.0f);
+  //projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
   while (!glfwWindowShouldClose(window))
   {
     currentFrame = glfwGetTime();
@@ -132,6 +137,8 @@ void render()
   greenValue= ((sin(timeValue) / 2.0f) + 0.5f);
   for(int i=0; i<sceneObjects.size(); i++)
   {
+    sceneObjects[i].getShader().setUniform("view",glm::value_ptr(view));
+    sceneObjects[i].getShader().setUniform("projection",glm::value_ptr(projection));
     sceneObjects[i].getShader().setUniform("transform",glm::value_ptr(sceneObjects[i].getModelMatrix()));
     sceneObjects[i].getShader().setUniform("fade",&greenValue);
     sceneObjects[i].getShader().setUniform("color",color);
