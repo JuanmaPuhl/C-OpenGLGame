@@ -28,10 +28,11 @@ public:
       std::cout << std::endl;
     }
   }
-  void getFpsCount(float current, float* lastTime);
+  int getFpsCount(float current, float* lastTime);
 
 private:
   static const bool DEBUG = true;
   int fps = 0;
+  int fpsConstantes = 0;
 };
 #endif

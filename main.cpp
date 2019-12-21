@@ -40,8 +40,8 @@ std::string fileVertexShader = "Shaders/vs.glsl";
 std::string fileVertexShader2 = "Shaders/vs2.glsl";
 std::string fileFragmentShader = "Shaders/fs.glsl";
 std::string fileFragmentShader2 = "Shaders/fs2.glsl";
-const int WIDTH = 800;
-const int HEIGHT = 600;
+const int WIDTH = 1280;
+const int HEIGHT = 720;
 Game Game(WIDTH, HEIGHT);
 float color[3] = {0.1,0.7,0.5};
 float prueba = 1.0f;
@@ -54,13 +54,13 @@ float vertices[] =
  -1.0f,-1.0f, 0.0f,
   1.0f,-1.0f, 0.0f
 };
-int fps = 0;
-int fpsConstante = 0;
+// int fps = 0;
+// int fpsConstante = 0;
 float timeValue, greenValue;
 float lastTimeFPS = 0;
 float currentFrame;
 int indice;
-OrtographicCamera camera;
+OrtographicCamera camera(WIDTH,HEIGHT);
 
 int main(void)
 {
@@ -84,12 +84,6 @@ int main(void)
   glewExperimental = GL_TRUE;
   glewInit();
   glGetError();
-
-
-
-
-
-
   glViewport(0, 0, WIDTH, HEIGHT);
   //glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
@@ -107,16 +101,8 @@ int main(void)
   shader1.useShader();
   Object player(quadGeometry,shader2);
   player.scale(glm::vec3(100.0,100.5,1.0));
-  player.setPosition(glm::vec3(400.0f,300.0f,0.0f));
+  player.setPosition(glm::vec3(float(WIDTH / 2),float(HEIGHT/2),0.0f));
   sceneObjects.push_back(player);
-
-
-
-
-
-
-
-
 
   // FreeType
   FT_Library ft;
@@ -178,7 +164,6 @@ int main(void)
   FT_Done_Face(face);
   FT_Done_FreeType(ft);
 
-
   // Configure VAO/VBO for texture quads
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -190,14 +175,6 @@ int main(void)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 
-
-
-
-
-
-
-
-  //projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
   while (!glfwWindowShouldClose(window))
   {
     currentFrame = glfwGetTime();
@@ -223,18 +200,8 @@ void render()
   greenValue= ((sin(timeValue) / 2.0f) + 0.5f);
   camera.refreshViewMatrix();
   shaders[0].useShader();
-
-  fps++;
-  if((currentFrame - lastTimeFPS) >= 1.0f)
-  {
-    double fpsCount = 1000.0/double(fps);
-    fpsConstante = fps;
-    fps = 0;
-    lastTimeFPS++;
-  }
-
   RenderText(shaders[0], "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
-  RenderText(shaders[0], std::to_string(fpsConstante), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+  RenderText(shaders[0], std::to_string(debug.getFpsCount(currentFrame,&lastTimeFPS)), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
 
   for(int i=0; i<sceneObjects.size(); i++)
   {

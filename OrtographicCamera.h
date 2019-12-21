@@ -7,7 +7,7 @@
 class OrtographicCamera
 {
 public:
-  OrtographicCamera();
+  OrtographicCamera(int width, int height);
   ~OrtographicCamera();
   void refreshViewMatrix();
   glm::mat4 getViewMatrix();
