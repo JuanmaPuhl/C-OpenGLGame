@@ -20,7 +20,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void render();
 void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 std::vector<Object> sceneObjects;
-std::vector<Shader> shaders;
+Shader *shaderTexto;
+Shader *shaderQuad;
 std::string fileVertexShader = "Shaders/vs.glsl";
 std::string fileVertexShader2 = "Shaders/vs2.glsl";
 std::string fileFragmentShader = "Shaders/fs.glsl";
@@ -48,6 +49,7 @@ OrtographicCamera camera(WIDTH,HEIGHT);
 
 int main(void)
 {
+  /*=====================INICIA CREACION DE VENTANA==========================*/
   GLFWwindow* window;
   if (!glfwInit())
   {
@@ -68,8 +70,18 @@ int main(void)
   glewExperimental = GL_TRUE;
   glewInit();
   glGetError();
+  /*====================TERMINA CREACION DE VENTANA==========================*/
+  /*========================CREACION OBJETOS=================================*/
+  Geometry quadGeometry(vertices,NELEMS(vertices));
+  shaderTexto = new Shader(fileVertexShader,fileFragmentShader);
+  shaderQuad = new Shader(fileVertexShader2,fileFragmentShader2);
+  Object player(quadGeometry,*shaderQuad);
+  player.scale(glm::vec3(100.0,100.5,1.0));
+  player.setPosition(glm::vec3(float(WIDTH / 2),float(HEIGHT/2),0.0f));
+  sceneObjects.push_back(player);
+  fontManager = new FontManager();
+  /*======================FIN CREACION OBJETOS===============================*/
   glViewport(0, 0, WIDTH, HEIGHT);
-  //glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -77,27 +89,13 @@ int main(void)
   GLfloat deltaTime = 0.0f;
   GLfloat lastFrame = 0.0f;
   Game.State = GAME_ACTIVE;
-  Geometry quadGeometry(vertices,NELEMS(vertices));
-  Shader shader1(fileVertexShader,fileFragmentShader);
-  Shader shader2(fileVertexShader2,fileFragmentShader2);
-  shaders.push_back(shader1);
-  shaders.push_back(shader2);
-  shader1.useShader();
-  Object player(quadGeometry,shader2);
-  player.scale(glm::vec3(100.0,100.5,1.0));
-  player.setPosition(glm::vec3(float(WIDTH / 2),float(HEIGHT/2),0.0f));
-  sceneObjects.push_back(player);
-
-  fontManager = new FontManager();
   while (!glfwWindowShouldClose(window))
   {
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
     Game.processInput(deltaTime);
-    // debug.getFpsCount(currentFrame,&lastTimeFPS);
     Game.update(deltaTime);
-
     render();
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -113,14 +111,10 @@ void render()
   timeValue = glfwGetTime();
   greenValue= ((sin(timeValue) / 2.0f) + 0.5f);
   camera.refreshViewMatrix();
-  for(Shader shader : shaders)
-  {
-    shader.useShader();
-    shader.setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
-  }
-  fontManager->RenderText(shaders[0], "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
-  fontManager->RenderText(shaders[0], std::to_string(debug.getFpsCount(currentFrame,&lastTimeFPS)), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
-
+  shaderTexto->useShader();
+  shaderTexto->setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
+  fontManager->RenderText(*shaderTexto, "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+  fontManager->RenderText(*shaderTexto, std::to_string(debug.getFpsCount(currentFrame,&lastTimeFPS)), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
   for(int i=0; i<sceneObjects.size(); i++)
   {
     sceneObjects[i].getShader().useShader();
