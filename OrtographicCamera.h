@@ -23,6 +23,6 @@ private:
   glm::vec3 cameraUp;
   glm::mat4 projectionMatrix;
   glm::mat4 viewMatrix;
-  float velocity = 0.05f;
+  float velocity = 10.0f;
 };
 #endif
