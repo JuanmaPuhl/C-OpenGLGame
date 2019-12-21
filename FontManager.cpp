@@ -1,15 +1,6 @@
 #include "FontManager.h"
-/// Holds all state information relevant to a character as loaded using FreeType
-struct Character {
-    GLuint TextureID;   // ID handle of the glyph texture
-    glm::ivec2 Size;    // Size of glyph
-    glm::ivec2 Bearing;  // Offset from baseline to left/top of glyph
-    int Advance;    // Horizontal offset to advance to next glyph
-};
 
-std::map<GLchar, Character> Characters;
-GLuint VAOText, VBOText;
-void fontManagerInit()
+FontManager::FontManager()
 {
   // FreeType
   FT_Library ft;
@@ -64,7 +55,7 @@ void fontManagerInit()
         glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
         face->glyph->advance.x
     };
-    Characters.insert(std::pair<GLchar, Character>(c, character));
+    this->Characters.insert(std::pair<GLchar, Character>(c, character));
   }
   glBindTexture(GL_TEXTURE_2D, 0);
   // Destroy FreeType once we're finished
@@ -72,24 +63,25 @@ void fontManagerInit()
   FT_Done_FreeType(ft);
 
   // Configure VAO/VBO for texture quads
-  glGenVertexArrays(1, &VAOText);
-  glGenBuffers(1, &VBOText);
-  glBindVertexArray(VAOText);
-  glBindBuffer(GL_ARRAY_BUFFER, VBOText);
+  glGenVertexArrays(1, &(this->VAOText));
+  glGenBuffers(1, &(this->VBOText));
+  glBindVertexArray(this->VAOText);
+  glBindBuffer(GL_ARRAY_BUFFER, this->VBOText);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 }
+FontManager::~FontManager()
+{
 
+}
 
-
-void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
+void FontManager::RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
 {
     // Activate corresponding render state
     shader.useShader();
-    // shader.setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
     shader.setUniform("textColor",glm::value_ptr(color));
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAOText);
@@ -97,10 +89,10 @@ void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat 
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
     {
-        Character ch = Characters[*c];
+        Character ch = this->Characters[*c];
 
         GLfloat xpos = x + ch.Bearing.x * scale;
-        GLfloat ypos = y + (Characters['H'].Bearing.y - ch.Bearing.y) * scale;
+        GLfloat ypos = y + (this->Characters['H'].Bearing.y - ch.Bearing.y) * scale;
 
         GLfloat w = ch.Size.x * scale;
         GLfloat h = ch.Size.y * scale;

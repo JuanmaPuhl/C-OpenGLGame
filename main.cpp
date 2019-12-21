@@ -14,7 +14,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "OrtographicCamera.h"
-#include "FontManager.h"
 
 /*Declaraciones previas de funciones implementadas mas abajo*/
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -44,6 +43,7 @@ float timeValue, greenValue;
 float lastTimeFPS = 0;
 float currentFrame;
 int indice;
+FontManager* fontManager;
 OrtographicCamera camera(WIDTH,HEIGHT);
 
 int main(void)
@@ -87,8 +87,8 @@ int main(void)
   player.scale(glm::vec3(100.0,100.5,1.0));
   player.setPosition(glm::vec3(float(WIDTH / 2),float(HEIGHT/2),0.0f));
   sceneObjects.push_back(player);
-  fontManagerInit();
 
+  fontManager = new FontManager();
   while (!glfwWindowShouldClose(window))
   {
     currentFrame = glfwGetTime();
@@ -118,8 +118,8 @@ void render()
     shader.useShader();
     shader.setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
   }
-  RenderText(shaders[0], "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
-  RenderText(shaders[0], std::to_string(debug.getFpsCount(currentFrame,&lastTimeFPS)), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+  fontManager->RenderText(shaders[0], "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+  fontManager->RenderText(shaders[0], std::to_string(debug.getFpsCount(currentFrame,&lastTimeFPS)), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
 
   for(int i=0; i<sceneObjects.size(); i++)
   {
