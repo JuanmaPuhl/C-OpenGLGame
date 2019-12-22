@@ -8,7 +8,7 @@
 class Shader
 {
 public:
-  Shader(std::string& vertexSource, std::string& fragmentSource);
+  Shader(std::string& source);
   ~Shader();
   void useShader();
   unsigned int getShaderProgram();

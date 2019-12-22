@@ -1,12 +1,11 @@
 #include "Shader.h"
 #include <malloc.h>
 #include "Utilities.h"
-
-Shader::Shader(std::string& vertexSource, std::string& fragmentSource)
+#include <vector>
+Shader::Shader(std::string& source)
 {
-  const std::string vs = fileManager.readFile(vertexSource);
-  const std::string fs = fileManager.readFile(fragmentSource);
-  createShaderProgram(vs,fs);
+  std::vector<std::string> shaderSource = fileManager.parseFile(source);
+  createShaderProgram(shaderSource[0],shaderSource[1]);
 }
 Shader::~Shader()
 {

@@ -27,10 +27,7 @@ std::vector<Object> sceneObjects;
 Shader *shaderTexto;
 Shader *shaderQuad;
 std::string fileShaderText = "Shaders/shaderText.shader";
-std::string fileVertexShader = "Shaders/vs.glsl";
-std::string fileVertexShader2 = "Shaders/vs2.glsl";
-std::string fileFragmentShader = "Shaders/fs.glsl";
-std::string fileFragmentShader2 = "Shaders/fs2.glsl";
+std::string fileShaderQuad = "Shaders/shaderQuad.shader";
 Game Game(WIDTH, HEIGHT);
 float verticesQuad[] =
 {
@@ -74,11 +71,8 @@ int main(void)
   /*====================TERMINA CREACION DE VENTANA==========================*/
   /*========================CREACION OBJETOS=================================*/
   Geometry quadGeometry(verticesQuad,NELEMS(verticesQuad));
-  std::vector<std::string> archivos = fileManager.parseFile(fileShaderText);
-  std::cout<<archivos[0]<<std::endl;
-  std::cout<<archivos[1]<<std::endl;
-  shaderTexto = new Shader(fileVertexShader,fileFragmentShader);
-  shaderQuad = new Shader(fileVertexShader2,fileFragmentShader2);
+  shaderTexto = new Shader(fileShaderText);
+  shaderQuad = new Shader(fileShaderQuad);
   Object player(quadGeometry,*shaderQuad);
   player.scale(glm::vec3(100.0,100.5,1.0));
   player.setPosition(glm::vec3(float(WIDTH / 2),float(HEIGHT/2),0.0f));
