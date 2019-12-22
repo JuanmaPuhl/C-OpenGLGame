@@ -15,23 +15,24 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "OrtographicCamera.h"
 
+#define WIDTH 1280
+#define HEIGHT 720
+
 /*Declaraciones previas de funciones implementadas mas abajo*/
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void render();
 void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
+/*Variables globales*/
 std::vector<Object> sceneObjects;
 Shader *shaderTexto;
 Shader *shaderQuad;
+std::string fileShaderText = "Shaders/shaderText.shader";
 std::string fileVertexShader = "Shaders/vs.glsl";
 std::string fileVertexShader2 = "Shaders/vs2.glsl";
 std::string fileFragmentShader = "Shaders/fs.glsl";
 std::string fileFragmentShader2 = "Shaders/fs2.glsl";
-const int WIDTH = 1280;
-const int HEIGHT = 720;
 Game Game(WIDTH, HEIGHT);
-float color[3] = {0.1,0.7,0.5};
-float prueba = 1.0f;
-float vertices[] =
+float verticesQuad[] =
 {
   1.0f, 1.0f, 0.0f,
  -1.0f, 1.0f, 0.0f,
@@ -72,7 +73,10 @@ int main(void)
   glGetError();
   /*====================TERMINA CREACION DE VENTANA==========================*/
   /*========================CREACION OBJETOS=================================*/
-  Geometry quadGeometry(vertices,NELEMS(vertices));
+  Geometry quadGeometry(verticesQuad,NELEMS(verticesQuad));
+  std::vector<std::string> archivos = fileManager.parseFile(fileShaderText);
+  std::cout<<archivos[0]<<std::endl;
+  std::cout<<archivos[1]<<std::endl;
   shaderTexto = new Shader(fileVertexShader,fileFragmentShader);
   shaderQuad = new Shader(fileVertexShader2,fileFragmentShader2);
   Object player(quadGeometry,*shaderQuad);
@@ -122,8 +126,6 @@ void render()
     sceneObjects[i].getShader().setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
     sceneObjects[i].getShader().setUniform("transform",glm::value_ptr(sceneObjects[i].getModelMatrix()));
     sceneObjects[i].getShader().setUniform("fade",&greenValue);
-    sceneObjects[i].getShader().setUniform("color",color);
-    sceneObjects[i].getShader().setUniform("prueba",&prueba);
     sceneObjects[i].drawObject();
   }
 }
