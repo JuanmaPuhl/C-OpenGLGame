@@ -11,9 +11,9 @@ void main()
 <Shader>Fragment
 #version 410 core
 out vec4 FragColor;
-uniform float fade;
+uniform vec3 color;
 void main()
 {
 
-  FragColor = vec4(fade,fade,0.0,1.0);
+  FragColor = vec4(color.xyz,1.0);
 }

@@ -14,7 +14,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "OrtographicCamera.h"
-
+#include "GameEntity.h"
+#include "Character.h"
 #define WIDTH 1280
 #define HEIGHT 720
 
@@ -23,7 +24,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void render();
 void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 /*Variables globales*/
-std::vector<Object> sceneObjects;
+std::vector<GameEntity*> sceneObjects;
 Shader *shaderTexto;
 Shader *shaderQuad;
 std::string fileShaderText = "Shaders/shaderText.shader";
@@ -74,9 +75,13 @@ int main(void)
   shaderTexto = new Shader(fileShaderText);
   shaderQuad = new Shader(fileShaderQuad);
   Object player(quadGeometry,*shaderQuad);
-  player.scale(glm::vec3(100.0,100.5,1.0));
-  player.setPosition(glm::vec3(float(WIDTH / 2),float(HEIGHT/2),0.0f));
-  sceneObjects.push_back(player);
+  Object bloque(quadGeometry,*shaderQuad);
+  player.scale(glm::vec3(32.0,32.0,1.0));
+  bloque.scale(glm::vec3(32.0,32.0,1.0));
+  GameEntity* playerEntity = new Character(&player,glm::vec2(32.0),glm::vec3(0.0),glm::vec3(0.8,0.0,0.80));
+  GameEntity* floorEntity = new Character(&bloque,glm::vec2(32.0),glm::vec3(128.0,0.0,0.0),glm::vec3(0.0,0.8,0.0));
+  sceneObjects.push_back(playerEntity);
+  sceneObjects.push_back(floorEntity);
   fontManager = new FontManager();
   /*======================FIN CREACION OBJETOS===============================*/
   glViewport(0, 0, WIDTH, HEIGHT);
@@ -110,17 +115,15 @@ void render()
   greenValue= ((sin(timeValue) / 2.0f) + 0.5f);
   camera.refreshViewMatrix();
   shaderTexto->useShader();
-  shaderTexto->setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
+  shaderTexto->setUniform("projection",glm::value_ptr(camera.getHUDProjectionMatrix()));
   fontManager->RenderText(*shaderTexto, "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
   fontManager->RenderText(*shaderTexto, std::to_string(debug.getFpsCount(currentFrame,&lastTimeFPS)), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
-  for(int i=0; i<sceneObjects.size(); i++)
+  for(GameEntity* entidad : sceneObjects)
   {
-    sceneObjects[i].getShader().useShader();
-    sceneObjects[i].getShader().setUniform("view",glm::value_ptr(camera.getViewMatrix()));
-    sceneObjects[i].getShader().setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
-    sceneObjects[i].getShader().setUniform("transform",glm::value_ptr(sceneObjects[i].getModelMatrix()));
-    sceneObjects[i].getShader().setUniform("fade",&greenValue);
-    sceneObjects[i].drawObject();
+    entidad->getShader().useShader();
+    entidad->getShader().setUniform("view",glm::value_ptr(camera.getViewMatrix()));
+    entidad->getShader().setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
+    entidad->render();
   }
 }
 
@@ -132,13 +135,26 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
   }
   if (key >= 0 && key < 1024)
   {
-    if (action == GLFW_PRESS)
-    Game.Keys[key] = GL_TRUE;
-    else if (action == GLFW_RELEASE)
-    Game.Keys[key] = GL_FALSE;
+    glm::vec2 direction = glm::vec2(0.0);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-      camera.moveCamera(-1);
+      direction[0] = -1;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-      camera.moveCamera(1);
+      direction[0] = 1;
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
+      direction[0] = 0;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+      direction[1] = 1;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+      direction[1] = -1;
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE)
+      direction[1] = 0;
+    static_cast<Character*>(sceneObjects[0])->move(direction);
+
+    if(glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+      camera.zoomCamera(1);
+    if(glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+      camera.zoomCamera(-1);
+    if(glfwGetKey(window, GLFW_KEY_U) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_J) == GLFW_RELEASE)
+      camera.zoomCamera(0.0);
   }
 }

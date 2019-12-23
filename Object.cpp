@@ -73,3 +73,19 @@ glm::mat4 Object::getModelMatrix()
 {
   return this->modelMatrix;
 }
+
+glm::vec3 Object::getPosition()
+{
+  return this->position;
+}
+
+glm::vec2 Object::getRotation()
+{
+
+  return glm::vec2(0.0);
+}
+
+glm::vec3 Object::getScale()
+{
+  return glm::vec3(0.0);
+}

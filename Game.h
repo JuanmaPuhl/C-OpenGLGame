@@ -21,6 +21,5 @@ public:
   void render(); //Renderizador
   void update(float time); //Actualizador del tiempo
   void processInput(float time); //Procesar entradas
-
 };
 #endif

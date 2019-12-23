@@ -20,6 +20,9 @@ public:
   void scale(glm::vec3 scale);
   Shader getShader();
   glm::mat4 getModelMatrix();
+  glm::vec3 getPosition();
+  glm::vec2 getRotation();
+  glm::vec3 getScale();
 private:
   unsigned int VBO;
   unsigned int VAO;
