@@ -156,5 +156,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
       camera.zoomCamera(-1);
     if(glfwGetKey(window, GLFW_KEY_U) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_J) == GLFW_RELEASE)
       camera.zoomCamera(0.0);
+
+
+    if(glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+      camera.moveCamera(1);
+    if(glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+      camera.moveCamera(-1);
+    if(glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_G) == GLFW_RELEASE)
+      camera.moveCamera(0);
+
   }
 }

@@ -32,5 +32,6 @@ private:
   int width;
   int zoomOrder = 0;
   float zoomVelocity = 0.01f;
+  int movementDirection = 0;
 };
 #endif
