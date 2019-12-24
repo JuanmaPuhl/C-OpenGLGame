@@ -4,6 +4,7 @@ GameEntity::GameEntity(Object* objeto, glm::vec2 size, glm::vec3 position, glm::
   :objeto(objeto), size(size), position(position), color(color)
 {
   this->setPosition(position);
+
 }
 
 GameEntity::~GameEntity()

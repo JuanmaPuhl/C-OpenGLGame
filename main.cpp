@@ -74,12 +74,10 @@ int main(void)
   Geometry quadGeometry(verticesQuad,NELEMS(verticesQuad));
   shaderTexto = new Shader(fileShaderText);
   shaderQuad = new Shader(fileShaderQuad);
-  Object player(quadGeometry,*shaderQuad);
-  Object bloque(quadGeometry,*shaderQuad);
-  player.scale(glm::vec3(32.0,32.0,1.0));
-  bloque.scale(glm::vec3(32.0,32.0,1.0));
-  GameEntity* playerEntity = new Character(&player,glm::vec2(32.0),glm::vec3(0.0),glm::vec3(0.8,0.0,0.80));
-  GameEntity* floorEntity = new Character(&bloque,glm::vec2(32.0),glm::vec3(128.0,0.0,0.0),glm::vec3(0.0,0.8,0.0));
+  Object genericQuad(quadGeometry,*shaderQuad);
+  genericQuad.scale(glm::vec3(32.0,32.0,1.0));
+  GameEntity* playerEntity = new Character(&genericQuad,glm::vec2(32.0),glm::vec3(0.0),glm::vec3(0.8,0.0,0.80));
+  GameEntity* floorEntity = new Character(&genericQuad,glm::vec2(32.0),glm::vec3(128.0,0.0,0.0),glm::vec3(0.0,0.8,0.0));
   sceneObjects.push_back(playerEntity);
   sceneObjects.push_back(floorEntity);
   fontManager = new FontManager();
