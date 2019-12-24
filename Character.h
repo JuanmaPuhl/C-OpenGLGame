@@ -4,7 +4,7 @@
 class Character : public GameEntity
 {
 public:
-  Character(Object* objeto, glm::vec2 size, glm::vec3 position, glm::vec3 color);
+  Character(Object objeto, glm::vec2 size, glm::vec3 position, glm::vec3 color);
   ~Character();
   void moveCharacter();
   void move(glm::vec2 direction);

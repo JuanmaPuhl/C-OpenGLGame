@@ -19,12 +19,14 @@
 #define WIDTH 1280
 #define HEIGHT 720
 
-/*Declaraciones previas de funciones implementadas mas abajo*/
+/*Declaraciplayers previas de funciplayers implementadas mas abajo*/
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void render();
 void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
+void checkCollisions();
 /*Variables globales*/
-std::vector<GameEntity*> sceneObjects;
+GameEntity* player;
+std::vector<GameEntity*> levelObjects;
 Shader *shaderTexto;
 Shader *shaderQuad;
 std::string fileShaderText = "Shaders/shaderText.shader";
@@ -75,11 +77,9 @@ int main(void)
   shaderTexto = new Shader(fileShaderText);
   shaderQuad = new Shader(fileShaderQuad);
   Object genericQuad(quadGeometry,*shaderQuad);
-  genericQuad.scale(glm::vec3(32.0,32.0,1.0));
-  GameEntity* playerEntity = new Character(&genericQuad,glm::vec2(32.0),glm::vec3(0.0),glm::vec3(0.8,0.0,0.80));
-  GameEntity* floorEntity = new Character(&genericQuad,glm::vec2(32.0),glm::vec3(128.0,0.0,0.0),glm::vec3(0.0,0.8,0.0));
-  sceneObjects.push_back(playerEntity);
-  sceneObjects.push_back(floorEntity);
+  player = new Character(genericQuad,glm::vec2(32.0),glm::vec3(0.0),glm::vec3(0.8,0.0,0.80));
+  GameEntity* floorEntity = new Character(genericQuad,glm::vec2(32.0),glm::vec3(128.0,0.0,0.0),glm::vec3(0.0,0.8,0.0));
+  levelObjects.push_back(floorEntity);
   fontManager = new FontManager();
   /*======================FIN CREACION OBJETOS===============================*/
   glViewport(0, 0, WIDTH, HEIGHT);
@@ -116,7 +116,11 @@ void render()
   shaderTexto->setUniform("projection",glm::value_ptr(camera.getHUDProjectionMatrix()));
   fontManager->RenderText(*shaderTexto, "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
   fontManager->RenderText(*shaderTexto, std::to_string(debug.getFpsCount(currentFrame,&lastTimeFPS)), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
-  for(GameEntity* entidad : sceneObjects)
+  player->getShader().useShader();
+  player->getShader().setUniform("view",glm::value_ptr(camera.getViewMatrix()));
+  player->getShader().setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
+  player->render();
+  for(GameEntity* entidad : levelObjects)
   {
     entidad->getShader().useShader();
     entidad->getShader().setUniform("view",glm::value_ptr(camera.getViewMatrix()));
@@ -146,7 +150,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
       direction[1] = -1;
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE)
       direction[1] = 0;
-    static_cast<Character*>(sceneObjects[0])->move(direction);
+    static_cast<Character*>(player)->move(direction);
 
     if(glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
       camera.zoomCamera(1);
@@ -163,5 +167,38 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if(glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_G) == GLFW_RELEASE)
       camera.moveCamera(0);
 
+  }
+}
+
+float distance(float v1, float v2)
+{
+  //std::cout<<"V1 es: "<<v1<<" V2 es: "<<v2<<std::endl;
+  return abs(abs(v1)-abs(v2));
+}
+
+void checkCollisions()
+{
+  glm::vec3 positionPlayer = player->getPosition();
+  glm::vec2 sizePlayer = player->getSize();
+  for(GameEntity* entidad : levelObjects)
+  {
+    glm::vec3 positionObject = entidad->getPosition();
+    glm::vec2 sizeObject = entidad->getSize();
+    // Collision x-axis?
+    bool collisionX = positionPlayer.x + sizePlayer.x >= positionObject.x &&
+        positionObject.x + sizeObject.x >= positionPlayer.x;
+    // Collision y-axis?
+    bool collisionY = positionPlayer.y + sizePlayer.y >= positionObject.y &&
+        positionObject.y + sizeObject.y >= positionPlayer.y;
+    // Collision only if on both axes
+    if(collisionX && collisionY)
+    {
+      fontManager->RenderText(*shaderTexto, "   CHOQUE", 128.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+      player->setPosition(positionObject - glm::vec3(float(sizeObject.x*2.0f),0.0,0.0));
+    }
+    else
+    {
+      fontManager->RenderText(*shaderTexto, "NO CHOQUE", 128.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+    }
   }
 }
