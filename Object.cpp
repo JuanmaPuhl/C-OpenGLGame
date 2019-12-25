@@ -6,12 +6,7 @@ Object::Object(Geometry geometry,const Shader& shader):
   this->VBO = geometry.getVBO();
   this->data = geometry.getData();
   this->dataSize = geometry.getDataSize();
-  glGenVertexArrays(1, &(this->VAO));
-  glBindVertexArray(this->VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-  glBufferData(GL_ARRAY_BUFFER, this->dataSize * sizeof(this->data), this->data, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
+  this->VAO = geometry.getVAO();
   this->modelMatrix = glm::mat4(1.0f);
   this->position = glm::vec3(0.0f,0.0f,0.0f);
 }

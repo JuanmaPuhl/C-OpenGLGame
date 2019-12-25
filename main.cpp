@@ -16,6 +16,8 @@
 #include "OrtographicCamera.h"
 #include "GameEntity.h"
 #include "Character.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 #define WIDTH 1280
 #define HEIGHT 720
 
@@ -23,7 +25,7 @@
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void render();
 void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
-void checkCollisions();
+bool checkCollisions();
 /*Variables globales*/
 GameEntity* player;
 std::vector<GameEntity*> levelObjects;
@@ -41,12 +43,37 @@ float verticesQuad[] =
  -1.0f,-1.0f, 0.0f,
   1.0f,-1.0f, 0.0f
 };
+float texCoordsQuad[] =
+{
+  1.0f, 1.0f,
+  0.0f, 1.0f,
+  1.0f, 0.0f,
+  0.0f, 1.0f,
+  0.0f, 0.0f,
+  1.0f, 0.0f
+};
 float timeValue, greenValue;
 float lastTimeFPS = 0;
 float currentFrame;
 int indice;
 FontManager* fontManager;
 OrtographicCamera camera(WIDTH,HEIGHT);
+  unsigned int texture1;
+void armarTextura(unsigned int* texture,unsigned char* data, int w, int h,int mode)
+{
+  glBindTexture(GL_TEXTURE_2D, *texture);
+  if(mode)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  else
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  // set texture filtering parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
 
 int main(void)
 {
@@ -73,7 +100,7 @@ int main(void)
   glGetError();
   /*====================TERMINA CREACION DE VENTANA==========================*/
   /*========================CREACION OBJETOS=================================*/
-  Geometry quadGeometry(verticesQuad,NELEMS(verticesQuad));
+  Geometry quadGeometry(verticesQuad,NELEMS(verticesQuad),texCoordsQuad,NELEMS(texCoordsQuad));
   shaderTexto = new Shader(fileShaderText);
   shaderQuad = new Shader(fileShaderQuad);
   Object genericQuad(quadGeometry,*shaderQuad);
@@ -90,6 +117,21 @@ int main(void)
   GLfloat deltaTime = 0.0f;
   GLfloat lastFrame = 0.0f;
   Game.State = GAME_ACTIVE;
+  glGenTextures(1, &texture1);
+  int w, h, nrChannels;
+
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char *data = stbi_load("Textures/pj.png", &w, &h, &nrChannels, 0);
+  if (data)
+  {
+    armarTextura(&texture1,data,w,h,1);
+  }
+
+
+
+  genericQuad.getShader().useShader();
+  glUniform1i(glGetUniformLocation(shaderQuad->getShaderProgram(), "image"), 0);
+  stbi_image_free(data);
   while (!glfwWindowShouldClose(window))
   {
     currentFrame = glfwGetTime();
@@ -109,6 +151,7 @@ void render()
 {
   glClearColor(0.0f,0.0f,0.0f,1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
   timeValue = glfwGetTime();
   greenValue= ((sin(timeValue) / 2.0f) + 0.5f);
   camera.refreshViewMatrix();
@@ -117,12 +160,16 @@ void render()
   fontManager->RenderText(*shaderTexto, "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
   fontManager->RenderText(*shaderTexto, std::to_string(debug.getFpsCount(currentFrame,&lastTimeFPS)), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
   player->getShader().useShader();
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture1);
   player->getShader().setUniform("view",glm::value_ptr(camera.getViewMatrix()));
   player->getShader().setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
   player->render();
   for(GameEntity* entidad : levelObjects)
   {
     entidad->getShader().useShader();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
     entidad->getShader().setUniform("view",glm::value_ptr(camera.getViewMatrix()));
     entidad->getShader().setUniform("projection",glm::value_ptr(camera.getProjectionMatrix()));
     entidad->render();
@@ -176,7 +223,7 @@ float distance(float v1, float v2)
   return abs(abs(v1)-abs(v2));
 }
 
-void checkCollisions()
+bool checkCollisions()
 {
   glm::vec3 positionPlayer = player->getPosition();
   glm::vec2 sizePlayer = player->getSize();
