@@ -52,6 +52,18 @@ float texCoordsQuad[] =
   0.0f, 0.0f,
   1.0f, 0.0f
 };
+
+std::string level[] =
+{
+  "###----###",
+  "###----###",
+  "----------",
+  "####--####",
+  "####--####",
+  "##########"
+
+};
+
 float timeValue, greenValue;
 float lastTimeFPS = 0;
 float currentFrame;
@@ -104,9 +116,35 @@ int main(void)
   shaderTexto = new Shader(fileShaderText);
   shaderQuad = new Shader(fileShaderQuad);
   Object genericQuad(quadGeometry,*shaderQuad);
+  float x = 0.0f;
+  float y = 0.0f;
+  int contador = 0;
+  for(int i=0; i<NELEMS(level); i++)
+  {
+    std::string linea = level[i];
+
+    for(int j=0; j<linea.length(); j++)
+    {
+      contador++;
+      if(linea.at(j)=='#')
+      {
+        std::cout<<"#";
+        levelObjects.push_back(new Character(genericQuad,glm::vec2(32.0),glm::vec3(x-(linea.length()/2)*64.0f,y+(NELEMS(level)/2)*64.0f,-0.1),glm::vec3(i/10.0+0.2,0.0,j/10.0+0.2)));
+      }
+      else
+        std::cout<<"-";
+      x += 64.0f;
+
+    }
+    std::cout<<std::endl;
+    y -= 64.0f;
+    x = 0.0f;
+    // std::cout<<linea<<std::endl;
+  }
+  std::cout<<contador<<std::endl;
   player = new Character(genericQuad,glm::vec2(32.0),glm::vec3(0.0),glm::vec3(0.8,0.0,0.80));
-  GameEntity* floorEntity = new Character(genericQuad,glm::vec2(32.0),glm::vec3(128.0,0.0,0.0),glm::vec3(0.0,0.8,0.0));
-  levelObjects.push_back(floorEntity);
+  //GameEntity* floorEntity = new Character(genericQuad,glm::vec2(32.0),glm::vec3(128.0,0.0,0.0),glm::vec3(0.0,0.8,0.0));
+  //levelObjects.push_back(floorEntity);
   fontManager = new FontManager();
   /*======================FIN CREACION OBJETOS===============================*/
   glViewport(0, 0, WIDTH, HEIGHT);
@@ -140,6 +178,7 @@ int main(void)
     Game.processInput(deltaTime);
     Game.update(deltaTime);
     render();
+    //checkCollisions();
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
@@ -232,20 +271,18 @@ bool checkCollisions()
     glm::vec3 positionObject = entidad->getPosition();
     glm::vec2 sizeObject = entidad->getSize();
     // Collision x-axis?
-    bool collisionX = positionPlayer.x + sizePlayer.x >= positionObject.x &&
-        positionObject.x + sizeObject.x >= positionPlayer.x;
+    bool collisionX = positionPlayer.x + sizePlayer.x >= positionObject.x - sizeObject.x ||
+                      positionPlayer.x - sizePlayer.x <= positionObject.x + sizeObject.x;
+
     // Collision y-axis?
     bool collisionY = positionPlayer.y + sizePlayer.y >= positionObject.y &&
         positionObject.y + sizeObject.y >= positionPlayer.y;
     // Collision only if on both axes
     if(collisionX && collisionY)
     {
-      fontManager->RenderText(*shaderTexto, "   CHOQUE", 128.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
-      player->setPosition(positionObject - glm::vec3(float(sizeObject.x*2.0f),0.0,0.0));
+      fontManager->RenderText(*shaderTexto, "X", positionObject.x + float(WIDTH/2) - 7.5f, -positionObject.y + float(HEIGHT/2) - 80.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+      //player->setPosition(positionObject - glm::vec3(float(sizeObject.x*2.0f),0.0,0.0));
     }
-    else
-    {
-      fontManager->RenderText(*shaderTexto, "NO CHOQUE", 128.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
-    }
+
   }
 }
