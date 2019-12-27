@@ -8,6 +8,16 @@ public:
   ~Character();
   void moveCharacter();
   void move(glm::vec2 direction);
+  void render()
+  {
+    static_cast<Character*>(this)->moveCharacter();
+    Shader shader = this->objeto.getShader();
+    shader.useShader();
+    shader.setUniform("color",glm::value_ptr(this->color));
+    shader.setUniform("transform",glm::value_ptr(this->objeto.getModelMatrix()));
+    this->objeto.drawObject();
+  }
+
 private:
   float velocidad = 5.0f;
   int directionX = 0;
