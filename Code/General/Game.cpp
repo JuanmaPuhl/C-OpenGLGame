@@ -52,7 +52,7 @@ void Game::render()
   // glBindTexture(GL_TEXTURE_2D, texture1);
   this->player2->getShader().setUniform("view",glm::value_ptr((*this->camera2).getViewMatrix()));
   this->player2->getShader().setUniform("projection",glm::value_ptr((*this->camera2).getProjectionMatrix()));
-  this->player2->render();
+  this->player2->render(this->deltaTime2);
   for(GameEntity* entidad : this->levelObjects2)
   {
     entidad->getShader().useShader();
@@ -60,7 +60,7 @@ void Game::render()
     // glBindTexture(GL_TEXTURE_2D, texture1);
     entidad->getShader().setUniform("view",glm::value_ptr((*this->camera2).getViewMatrix()));
     entidad->getShader().setUniform("projection",glm::value_ptr((*this->camera2).getProjectionMatrix()));
-    entidad->render();
+    entidad->render(this->deltaTime2);
   }
 }
 

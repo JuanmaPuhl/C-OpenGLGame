@@ -7,7 +7,7 @@ public:
   Block(Object objeto, glm::vec2 size, glm::vec3 position, glm::vec3 color, bool solid);
   ~Block();
   bool isSolid();
-  void render()
+  void render(float deltaTime)
   {
     Shader shader = this->objeto.getShader();
     shader.useShader();

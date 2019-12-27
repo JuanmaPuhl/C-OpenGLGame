@@ -17,9 +17,11 @@ void Character::move(glm::vec2 direction)
   this->directionY = direction[1];
 }
 
-void Character::moveCharacter()
+void Character::moveCharacter(float deltaTime)
 {
-  glm::vec3 newPosition = this->position + glm::vec3(this->directionX * this->velocidad,this->directionY * this->velocidad,0.0);
+  glm::vec3 newPosition = this->position + glm::vec3(
+      this->directionX * this->velocidad * deltaTime,
+      this->directionY * this->velocidad * deltaTime,
+      0.0);
   this->setPosition(newPosition);
-
 }

@@ -6,11 +6,11 @@ class Character : public GameEntity
 public:
   Character(Object objeto, glm::vec2 size, glm::vec3 position, glm::vec3 color);
   ~Character();
-  void moveCharacter();
+  void moveCharacter(float deltaTime);
   void move(glm::vec2 direction);
-  void render()
+  void render(float deltaTime)
   {
-    static_cast<Character*>(this)->moveCharacter();
+    static_cast<Character*>(this)->moveCharacter(deltaTime);
     Shader shader = this->objeto.getShader();
     shader.useShader();
     shader.setUniform("color",glm::value_ptr(this->color));
@@ -19,7 +19,7 @@ public:
   }
 
 private:
-  float velocidad = 5.0f;
+  float velocidad = 256.0f;
   int directionX = 0;
   int directionY = 0;
 };

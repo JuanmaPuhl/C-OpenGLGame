@@ -11,7 +11,7 @@ public:
   ~GameEntity();
   void setPosition(glm::vec3 position);
   void setColor(glm::vec3 color);
-  virtual void render() = 0;
+  virtual void render(float deltaTime) = 0;
   Shader getShader();
   Object* getObject();
   void setScale(glm::vec2 scale);
