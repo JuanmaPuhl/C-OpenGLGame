@@ -1,5 +1,5 @@
 #include "Object.h"
-#include "Utilities.h"
+#include "../General/Utilities.h"
 Object::Object(Geometry geometry,const Shader& shader):
   shader(shader)
 {

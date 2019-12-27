@@ -1,6 +1,6 @@
 #include "Shader.h"
 #include <malloc.h>
-#include "Utilities.h"
+#include "../General/Utilities.h"
 #include <vector>
 Shader::Shader(std::string& source)
 {

@@ -4,12 +4,12 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Utilities.h"
-#include "Geometry.h"
-#include "Shader.h"
-#include "Object.h"
-#include "GameEntity.h"
-#include "Character.h"
-#include "Block.h"
+#include "../Graphics/Geometry.h"
+#include "../Graphics/Shader.h"
+#include "../Graphics/Object.h"
+#include "../GameEntities/GameEntity.h"
+#include "../GameEntities/Character.h"
+#include "../GameEntities/Block.h"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -17,7 +17,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "OrtographicCamera.h"
+#include "../Graphics/OrtographicCamera.h"
 #include <tgmath.h>
 
 

@@ -1,5 +1,5 @@
 #include "GameEntity.h"
-#include "Utilities.h"
+#include "../General/Utilities.h"
 GameEntity::GameEntity(Object objeto, glm::vec2 size, glm::vec3 position, glm::vec3 color)
   :objeto(objeto), size(size), position(position), color(color)
 {

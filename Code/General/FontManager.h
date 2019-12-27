@@ -7,7 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <map>
 #include <ft2build.h>
-#include "Shader.h"
+#include "../Graphics/Shader.h"
 #include FT_FREETYPE_H
 class FontManager
 {
