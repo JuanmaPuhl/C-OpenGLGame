@@ -20,21 +20,30 @@ OrtographicCamera::~OrtographicCamera()
 
 }
 
-void OrtographicCamera::refreshViewMatrix()
+void OrtographicCamera::updateCamera(float deltaTime)
 {
   this->viewMatrix = glm::lookAt(position,position + front, up);
   if(this->zoomOrder!=0)
   {
     if(zoom >= 0.0){
-      this->zoom -= this->zoomOrder*this->zoomVelocity;
-      this->projectionMatrix = glm::ortho(-float(this->width/2)*this->zoom, float(this->width/2)*this->zoom, -float(this->height/2)*this->zoom, float(this->height/2)*this->zoom, -1.0f, 10.0f);
+      this->zoom -= this->zoomOrder*this->zoomVelocity * deltaTime;
+      this->projectionMatrix = glm::ortho(
+          -float(this->width/2)*this->zoom ,
+          float(this->width/2)*this->zoom ,
+          -float(this->height/2) * this->zoom ,
+          float(this->height/2) * this->zoom ,
+          -1.0f,
+          10.0f);
     }
     else{
       zoom = 0.0f;
     }
   }
   if(this->movementDirection != 0)
-    this->position += (float)this->movementDirection * glm::normalize(glm::cross(this->front, this->cameraUp)) * this->velocity;
+    this->position += (float)this->movementDirection * glm::normalize(
+                      glm::cross(this->front,
+                         this->cameraUp))
+                      * this->velocity * deltaTime;
 }
 
 void OrtographicCamera::zoomCamera(int zoomOrder)

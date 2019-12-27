@@ -9,7 +9,7 @@ class OrtographicCamera
 public:
   OrtographicCamera(int width, int height);
   ~OrtographicCamera();
-  void refreshViewMatrix();
+  void updateCamera(float deltaTime);
   glm::mat4 getViewMatrix();
   glm::mat4 getProjectionMatrix();
   glm::mat4 getHUDProjectionMatrix();
@@ -26,12 +26,12 @@ private:
   glm::mat4 projectionMatrix;
   glm::mat4 HUDProjectionMatrix;
   glm::mat4 viewMatrix;
-  float velocity = 10.0f;
+  float velocity = 50.0f;
   float zoom = 1.0f;
   int height;
   int width;
   int zoomOrder = 0;
-  float zoomVelocity = 0.01f;
+  float zoomVelocity = 1.0f;
   int movementDirection = 0;
 };
 #endif

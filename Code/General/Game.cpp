@@ -42,7 +42,7 @@ void Game::render()
 
   this->timeValue2 = glfwGetTime();
   this->greenValue2= ((sin(this->timeValue2) / 2.0f) + 0.5f);
-  (*this->camera2).refreshViewMatrix();
+  (*this->camera2).updateCamera(this->deltaTime2);
   this->shaderText2->useShader();
   this->shaderText2->setUniform("projection",glm::value_ptr((*this->camera2).getHUDProjectionMatrix()));
   this->fontManager2->RenderText(*this->shaderText2, "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));

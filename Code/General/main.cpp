@@ -31,18 +31,16 @@ int main(void)
   glewExperimental = GL_TRUE;
   glewInit();
   glGetError();
-  Game.init();
+
   /*====================TERMINA CREACION DE VENTANA==========================*/
-  /*======================FIN CREACION OBJETOS===============================*/
   glViewport(0, 0, WIDTH, HEIGHT);
   glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  Game.init();
   GLfloat deltaTime = 0.0f;
   GLfloat lastFrame = 0.0f;
+  Game.init();
   Game.State = GAME_ACTIVE;
-
   while (!glfwWindowShouldClose(window))
   {
     currentFrame = glfwGetTime();
