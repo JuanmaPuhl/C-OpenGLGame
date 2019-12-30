@@ -1,7 +1,7 @@
 #include "GameEntity.h"
 #include "../General/Utilities.h"
-GameEntity::GameEntity(Object objeto, glm::vec2 size, glm::vec3 position, glm::vec3 color)
-  :objeto(objeto), size(size), position(position), color(color)
+GameEntity::GameEntity(Object objeto, glm::vec2 size, glm::vec3 position, unsigned int texture)
+  :objeto(objeto), size(size), position(position), texture(texture)
 {
   this->setScale(size);
   this->setPosition(position);
@@ -27,9 +27,9 @@ void GameEntity::setScale(glm::vec2 scale)
   this->size = scale;
 }
 
-void GameEntity::setColor(glm::vec3 color)
+void GameEntity::setTexture(unsigned int texture)
 {
-  this->color = color;
+  this->texture = texture;
 }
 
 

@@ -1,7 +1,7 @@
 #include "Block.h"
 
-Block::Block(Object objeto, glm::vec2 size, glm::vec3 position, glm::vec3 color, bool solid)
-  :GameEntity(objeto, size, position, color)
+Block::Block(Object objeto, glm::vec2 size, glm::vec3 position, unsigned int texture, bool solid)
+  :GameEntity(objeto, size, position, texture)
 {
   this->solid = solid;
 }

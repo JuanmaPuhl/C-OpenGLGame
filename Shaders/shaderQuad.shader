@@ -20,12 +20,12 @@ uniform sampler2D image;
 void main()
 {
   //FragColor = vec4(texCoords.xy,0.0,1.0);
-  FragColor = vec4(color.xyz,1.0);
-  //vec4 color = texture(image,texCoords);//+vec4(0.5,0.0,0.0,1.0);
+  //FragColor = vec4(color.xyz,1.0);
+  vec4 color = texture(image,texCoords);//+vec4(0.5,0.0,0.0,1.0);
 
-  // if(color.a < 0.1)
-  // {
-  //   discard;
-  // }
-  //FragColor = color;
+  if(color.a < 0.1)
+  {
+    discard;
+  }
+  FragColor = color;
 }

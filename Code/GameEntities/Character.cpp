@@ -1,7 +1,7 @@
 #include "Character.h"
 
-Character::Character(Object objeto, glm::vec2 size, glm::vec3 position, glm::vec3 color)
-  :GameEntity(objeto, size, position, color)
+Character::Character(Object objeto, glm::vec2 size, glm::vec3 position, unsigned int texture)
+  :GameEntity(objeto, size, position, texture)
 {
 
 }
