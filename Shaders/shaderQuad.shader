@@ -23,7 +23,7 @@ void main()
   //FragColor = vec4(color.xyz,1.0);
   vec4 color = texture(image,texCoords);//+vec4(0.5,0.0,0.0,1.0);
 
-  if(color.a < 0.1)
+  if(color.a < 1.0)
   {
     discard;
   }
