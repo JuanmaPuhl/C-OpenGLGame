@@ -9,7 +9,21 @@ Game::Game(int width, int height)
 }
 Game::~Game()
 {
+  std::cout<<"Entro a eliminar el game"<<std::endl;
+  delete this->shaderText;
+  delete this->shaderQuad;
+  delete this->camera;
+  delete this->player;
 
+  for(unsigned int texture : textures)
+  {
+    delete &texture;
+  }
+
+  for(GameEntity* entity : levelObjects)
+  {
+    delete entity;
+  }
 }
 
 void Game::init()
@@ -34,25 +48,22 @@ void Game::render()
 {
   glClearColor(0.0f,0.0f,0.0f,1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+  this->camera->followEntity(this->player);
+  (*this->camera).updateCamera(this->deltaTime);
   this->timeValue = glfwGetTime();
   this->greenValue= ((sin(this->timeValue) / 2.0f) + 0.5f);
-  (*this->camera).updateCamera(this->deltaTime);
   this->shaderText->useShader();
   this->shaderText->setUniform("projection",glm::value_ptr((*this->camera).getHUDProjectionMatrix()));
   this->fontManager->RenderText(*this->shaderText, "FPS: ", 3.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
   this->fontManager->RenderText(*this->shaderText, std::to_string(debug.getFpsCount(this->currentFrame,&this->lastTimeFPS)), 53.0f, 3.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
   this->player->getShader().useShader();
-  // glActiveTexture(GL_TEXTURE0);
-  // glBindTexture(GL_TEXTURE_2D, texture1);
   this->player->getShader().setUniform("view",glm::value_ptr((*this->camera).getViewMatrix()));
   this->player->getShader().setUniform("projection",glm::value_ptr((*this->camera).getProjectionMatrix()));
   this->player->render(this->deltaTime);
+
   for(GameEntity* entidad : this->levelObjects)
   {
     entidad->getShader().useShader();
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, texture1);
     entidad->getShader().setUniform("view",glm::value_ptr((*this->camera).getViewMatrix()));
     entidad->getShader().setUniform("projection",glm::value_ptr((*this->camera).getProjectionMatrix()));
     entidad->render(this->deltaTime);
@@ -102,45 +113,43 @@ void Game::loadLevel()
   float x = 0.0f;
   float y = 0.0f;
   int contador = 0;
+  this->levelObjects.push_back(new Block(*this->genericQuad,glm::vec2(512.0),glm::vec3(0.0,0.0, -0.3),glm::vec3(0.42,0.63,0.27),false));
   for(int i=0; i<NELEMS(this->level); i++)
   {
     std::string linea = this->level[i];
-
     for(int j=0; j<linea.length(); j++)
     {
       contador++;
       if(linea.at(j)=='#')
       {
-        std::cout<<"#";
-        this->levelObjects.push_back(new Block(*this->genericQuad,glm::vec2(32.0),glm::vec3(x-(linea.length()/2)*32.0f,y+(NELEMS(this->level)/2)*32.0f,-0.1),this->textures[1],false));
+        float positionX = x-(linea.length()/2)*this->TILEWIDTH;
+        float positionY = y+(NELEMS(this->level)/2)*this->TILEHEIGHT;
+        float positionZ = -0.1f;
+        glm::vec3 position = glm::vec3(positionX,positionY,positionZ);
+        glm::vec2 objectSize = glm::vec2(this->TILEWIDTH,this->TILEHEIGHT);
+        Object object = *this->genericQuad;
+        unsigned int texture = this->textures[1];
+        GameEntity* block = new Block(object,objectSize,position,texture,false);
+        this->levelObjects.push_back(block);
       }
-      else
-        std::cout<<"-";
-      x += 32.0f;
-
+      x += this->TILEWIDTH;
     }
-    std::cout<<std::endl;
-    y -= 32.0f;
+    y -= this->TILEHEIGHT;
     x = 0.0f;
-    // std::cout<<linea<<std::endl;
   }
-  std::cout<<contador<<std::endl;
 }
 
 void Game::armarTextura(unsigned int* texture,unsigned char* data, int w, int h,int mode)
 {
   glGenTextures(1, texture);
-  // std::cout<<texture<<std::endl;
   glBindTexture(GL_TEXTURE_2D, *texture);
   if(mode)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
   else
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
-  // set the texture wrapping parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  // set texture filtering parameters
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glBindTexture(GL_TEXTURE_2D, 0);

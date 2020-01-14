@@ -70,3 +70,8 @@ void OrtographicCamera::moveCamera(int dir)
   this->movementDirection = dir;
 
 }
+
+void OrtographicCamera::followEntity(GameEntity* entity)
+{
+  this->position = entity->getPosition();
+}

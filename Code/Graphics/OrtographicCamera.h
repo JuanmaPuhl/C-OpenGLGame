@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "../GameEntities/GameEntity.h"
 
 class OrtographicCamera
 {
@@ -15,6 +16,7 @@ public:
   glm::mat4 getHUDProjectionMatrix();
   void moveCamera(int dir);
   void zoomCamera(int zoom);
+  void followEntity(GameEntity* entity);
 private:
   glm::vec3 position;
   glm::vec3 direction;

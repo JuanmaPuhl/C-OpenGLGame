@@ -8,6 +8,14 @@ GameEntity::GameEntity(Object objeto, glm::vec2 size, glm::vec3 position, unsign
 
 }
 
+GameEntity::GameEntity(Object objeto, glm::vec2 size, glm::vec3 position, glm::vec3 color)
+  :objeto(objeto), size(size), position(position), color(color)
+{
+  this->setScale(size);
+  this->setPosition(position);
+
+}
+
 GameEntity::~GameEntity()
 {
 

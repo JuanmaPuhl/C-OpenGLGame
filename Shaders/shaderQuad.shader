@@ -5,6 +5,7 @@ layout (location = 1) in vec2 textureCoords;
 uniform mat4 transform;
 uniform mat4 view;
 uniform mat4 projection;
+
 out vec2 texCoords;
 void main()
 {
@@ -16,6 +17,7 @@ void main()
 in vec2 texCoords;
 out vec4 FragColor;
 uniform vec3 color;
+uniform vec3 fragmentColor;
 uniform sampler2D image;
 void main()
 {
@@ -23,9 +25,9 @@ void main()
   //FragColor = vec4(color.xyz,1.0);
   vec4 color = texture(image,texCoords);//+vec4(0.5,0.0,0.0,1.0);
 
-  if(color.a < 1.0)
-  {
-    discard;
-  }
-  FragColor = color;
+    if(color.a < 1.0)
+    {
+      discard;
+    }
+  FragColor = color + vec4(fragmentColor,1.0) ;
 }
